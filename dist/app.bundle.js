@@ -23415,7 +23415,8 @@ var Header = function (_Component) {
         _this.state = {
             showCart: false,
             cart: _this.props.cartItems,
-            username: ''
+            username: '',
+            orderDetails: ''
         };
         return _this;
     }
@@ -23441,15 +23442,30 @@ var Header = function (_Component) {
         key: 'addOrder',
         value: function addOrder(e) {
             e.preventDefault();
+            var oldOrders = this.state.orderDetails;
+            var newOrder = JSON.stringify({ "user": this.state.username, "cost": this.props.total, "order": this.props.totalItems });
+            var orders = "[" + oldOrders.concat(',').concat(newOrder) + "]";
             _jquery2.default.ajax({
                 url: "https://api.myjson.com/bins/m73yf",
                 type: "PUT",
-                data: JSON.stringify({ "user": this.state.username, "cost": this.props.total, "order": this.props.totalItems }),
+                data: orders,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function success(data, textStatus, jqXHR) {
-                    alert('Order Added');
+                    alert('Order is Placed. Visit https://api.myjson.com/bins/m73yf');
                 }
+            });
+        }
+    }, {
+        key: 'confirmOrder',
+        value: function confirmOrder(e) {
+            e.preventDefault();
+            var self = this;
+            _jquery2.default.get("https://api.myjson.com/bins/m73yf", function (data, textStatus, jqXHR) {
+                self.setState({
+                    orderDetails: JSON.stringify(data)
+                });
+                alert(self.state.orderDetails);
             });
         }
     }, {
@@ -23552,7 +23568,7 @@ var Header = function (_Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'brand' },
-                        _react2.default.createElement('img', { className: 'logo', src: 'https://res.cloudinary.com/sivadass/image/upload/v1493547373/dummy-logo/Veggy.png', alt: 'Veggy Brand Logo' })
+                        _react2.default.createElement('img', { className: 'logo', src: 'http://res.cloudinary.com/sucheta/image/upload/v1510135207/logo_w3kcqb.png', alt: 'Brand Logo' })
                     ),
                     _react2.default.createElement(
                         'div',
@@ -23656,6 +23672,24 @@ var Header = function (_Component) {
                             _react2.default.createElement(
                                 'div',
                                 { className: 'action-block' },
+                                _react2.default.createElement(
+                                    'form',
+                                    { onSubmit: function onSubmit(e) {
+                                            return _this2.confirmOrder;
+                                        } },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { onClick: function onClick(e) {
+                                                return _this2.confirmOrder(e);
+                                            }, type: 'button', className: this.state.cart.length > 0 ? " " : "disabled" },
+                                        'CONFIRM ORDER'
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'p',
+                                    null,
+                                    'Click to Check Out '
+                                ),
                                 _react2.default.createElement(
                                     'form',
                                     { onSubmit: function onSubmit(e) {

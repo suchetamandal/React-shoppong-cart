@@ -12,7 +12,8 @@ class Header extends Component{
         this.state = {
             showCart: false,
             cart: this.props.cartItems,
-            username: ''
+            username: '',
+            orderDetails:''
         };
     }
     handleCart(e){
@@ -31,16 +32,30 @@ class Header extends Component{
 
     addOrder(e){
         e.preventDefault();
+        var oldOrders = this.state.orderDetails;
+        var newOrder = JSON.stringify({"user":this.state.username,"cost":this.props.total,"order": this.props.totalItems});
+        var orders = "["+ oldOrders.concat(',').concat(newOrder) + "]";
         $.ajax({
             url:"https://api.myjson.com/bins/m73yf",
             type:"PUT",
-            data: JSON.stringify({"user":this.state.username,"cost":this.props.total,"order": this.props.totalItems}),
+            data : orders,
             contentType:"application/json; charset=utf-8",
             dataType:"json",
             success: function(data, textStatus, jqXHR){
-                alert('Order Added');
+                alert('Order is Placed. Visit https://api.myjson.com/bins/m73yf');
             }
         }); 
+    }
+
+    confirmOrder(e){
+        e.preventDefault();
+        var self = this;
+        $.get("https://api.myjson.com/bins/m73yf", function(data, textStatus, jqXHR) {
+            self.setState({
+                orderDetails : JSON.stringify(data)
+            });
+            alert(self.state.orderDetails);
+        });
     }
 
     handleUserChange(e){
@@ -96,7 +111,7 @@ class Header extends Component{
             <header>
                 <div className="container">
                     <div className="brand">
-                        <img className="logo" src="https://res.cloudinary.com/sivadass/image/upload/v1493547373/dummy-logo/Veggy.png" alt="Veggy Brand Logo"/>
+                        <img className="logo" src="http://res.cloudinary.com/sucheta/image/upload/v1510135207/logo_w3kcqb.png" alt="Brand Logo"/>
                     </div>  
                     <div className="search">
                         <form onSubmit={(e) => this.handleSubmit}>
@@ -130,6 +145,10 @@ class Header extends Component{
                                 {view}
                             </CartScrollBar>
                             <div className="action-block">
+                            <form onSubmit={(e) => this.confirmOrder}>
+                                <button onClick={(e) => this.confirmOrder(e)} type="button" className={this.state.cart.length > 0 ? " " : "disabled"}>CONFIRM ORDER</button>
+                            </form>
+                            <p>Click to Check Out </p>
                             <form onSubmit={(e) => this.addOrder}>
                                 <button onClick={(e) => this.addOrder(e)} type="button" className={this.state.cart.length > 0 ? " " : "disabled"}>PROCEED TO CHECKOUT</button>
                             </form>    
