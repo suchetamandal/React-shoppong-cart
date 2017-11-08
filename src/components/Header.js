@@ -4,6 +4,7 @@ import Counter from './Counter';
 import EmptyCart from '../empty-states/EmptyCart';
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import {findDOMNode} from 'react-dom';
+import $ from 'jquery'; 
 
 class Header extends Component{
     constructor(props){
@@ -11,7 +12,7 @@ class Header extends Component{
         this.state = {
             showCart: false,
             cart: this.props.cartItems,
-            mobileSearch: false
+            username: ''
         };
     }
     handleCart(e){
@@ -22,22 +23,33 @@ class Header extends Component{
     }
     handleSubmit(e){
         e.preventDefault();
+        var user = this.state.username;
+        this.setState({
+            username: user
+        });
     }
-    handleMobileSearch(e){
+
+    addOrder(e){
+        e.preventDefault();
+        $.ajax({
+            url:"https://api.myjson.com/bins/m73yf",
+            type:"PUT",
+            data: JSON.stringify({"user":this.state.username,"cost":this.props.total,"order": this.props.totalItems}),
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function(data, textStatus, jqXHR){
+                alert('Order Added');
+            }
+        }); 
+    }
+
+    handleUserChange(e){
         e.preventDefault();
         this.setState({
-            mobileSearch: true
-        })
+            username: e.target.value
+        });
     }
-    handleSearchNav(e){
-        e.preventDefault();
-        this.setState({
-            mobileSearch: false
-        }, function(){
-            this.refs.searchBox.value = "";
-            this.props.handleMobileSearch();
-        })
-    }
+
     handleClickOutside(event) {
         const cartNode = findDOMNode(this.refs.cartPreview);
         const buttonNode = findDOMNode(this.refs.cartButton);
@@ -85,17 +97,13 @@ class Header extends Component{
                 <div className="container">
                     <div className="brand">
                         <img className="logo" src="https://res.cloudinary.com/sivadass/image/upload/v1493547373/dummy-logo/Veggy.png" alt="Veggy Brand Logo"/>
-                    </div>
-                        
+                    </div>  
                     <div className="search">
-                        <a className="mobile-search" href="#" onClick={this.handleMobileSearch.bind(this)}><img src="https://res.cloudinary.com/sivadass/image/upload/v1494756966/icons/search-green.png" alt="search"/></a>
-                        <form action="#" method="get" className={this.state.mobileSearch ? "search-form active" : "search-form"}>
-                            <a className="back-button" href="#" onClick={this.handleSearchNav.bind(this)}><img src="https://res.cloudinary.com/sivadass/image/upload/v1494756030/icons/back.png" alt="back"/></a>
-                            <input type="search" ref="searchBox" placeholder="Search for Vegetables and Fruits" className="search-keyword" onChange={this.props.handleSearch}/>
-                            <button className="search-button" type="submit" onClick={this.handleSubmit.bind(this)}></button>
-                        </form>
+                        <form onSubmit={(e) => this.handleSubmit}>
+                            <input value={this.state.username} onChange={e => this.handleUserChange(e)} />
+                            <button onClick={(e) => this.handleSubmit(e)}>Add Username</button>
+                        </form>    
                     </div>
-
                     <div className="cart"> 
                         <div className="cart-info">
                             <table>
@@ -122,7 +130,9 @@ class Header extends Component{
                                 {view}
                             </CartScrollBar>
                             <div className="action-block">
-                                <button type="button" className={this.state.cart.length > 0 ? " " : "disabled"}>PROCEED TO CHECKOUT</button>
+                            <form onSubmit={(e) => this.addOrder}>
+                                <button onClick={(e) => this.addOrder(e)} type="button" className={this.state.cart.length > 0 ? " " : "disabled"}>PROCEED TO CHECKOUT</button>
+                            </form>    
                             </div>
                         </div>
                     </div>

@@ -38,10 +38,7 @@ class App extends Component{
 	// Fetch Initial Set of Products from external API
 	getProducts(){
 		//For Localhost use the below url
-		const url = "src/products.json";
-
-		// For Production use the below url
-		//const url="https://quarkbackend.com/getfile/sivadass/products";
+		const url = "https://api.myjson.com/bins/xk26f";
 
 		axios.get(url)
 			.then(response => {
@@ -50,6 +47,15 @@ class App extends Component{
 				})
 			})
 	}
+
+	addOrder(){
+
+	}
+
+	displayOrder(){
+
+	}
+
 	componentWillMount(){
 		this.getProducts();
 	}
