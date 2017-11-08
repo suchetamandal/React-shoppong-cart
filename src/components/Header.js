@@ -35,6 +35,7 @@ class Header extends Component{
         var oldOrders = this.state.orderDetails;
         var newOrder = JSON.stringify({"user":this.state.username,"cost":this.props.total,"order": this.props.totalItems});
         var orders = "["+ oldOrders.concat(',').concat(newOrder) + "]";
+        var self = this;
         $.ajax({
             url:"https://api.myjson.com/bins/m73yf",
             type:"PUT",
@@ -42,7 +43,8 @@ class Header extends Component{
             contentType:"application/json; charset=utf-8",
             dataType:"json",
             success: function(data, textStatus, jqXHR){
-                alert('Order is Placed. Visit https://api.myjson.com/bins/m73yf');
+                alert('Order is Placed. Visit https://api.myjson.com/bins/m73yf?pretty=1');
+                location.reload();
             }
         }); 
     }
@@ -54,7 +56,6 @@ class Header extends Component{
             self.setState({
                 orderDetails : JSON.stringify(data)
             });
-            alert(self.state.orderDetails);
         });
     }
 

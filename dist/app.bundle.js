@@ -23445,6 +23445,7 @@ var Header = function (_Component) {
             var oldOrders = this.state.orderDetails;
             var newOrder = JSON.stringify({ "user": this.state.username, "cost": this.props.total, "order": this.props.totalItems });
             var orders = "[" + oldOrders.concat(',').concat(newOrder) + "]";
+            var self = this;
             _jquery2.default.ajax({
                 url: "https://api.myjson.com/bins/m73yf",
                 type: "PUT",
@@ -23452,7 +23453,8 @@ var Header = function (_Component) {
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function success(data, textStatus, jqXHR) {
-                    alert('Order is Placed. Visit https://api.myjson.com/bins/m73yf');
+                    alert('Order is Placed. Visit https://api.myjson.com/bins/m73yf?pretty=1');
+                    location.reload();
                 }
             });
         }
@@ -23465,7 +23467,6 @@ var Header = function (_Component) {
                 self.setState({
                     orderDetails: JSON.stringify(data)
                 });
-                alert(self.state.orderDetails);
             });
         }
     }, {
